@@ -9,13 +9,13 @@ public class AvlNode
     public AvlNode left;
     public AvlNode right;
     public AvlNode parent;
-    public int key;
+    public int value;
     public int balance;
 
-    public AvlNode(int k) 
+    public AvlNode(int aValue) 
     {
         left = right = parent = null;
         balance = 0;
-        key = k;
+        value = aValue;
     }
 }

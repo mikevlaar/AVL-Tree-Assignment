@@ -17,21 +17,21 @@ namespace AVL_Tree
 
         public void start()
         {
-            AvlTree avt1 = new AvlTree();
-            avt1.insert(15);
-            avt1.insert(12);
-            avt1.insert(90);
-            avt1.insert(83);
-            avt1.insert(99);
-            avt1.insert(42);
-            avt1.insert(56);
-            avt1.insert(8);
-            avt1.insert(74);
-            ArrayList ret = avt1.inorder();
-            for (int i = 0; i < ret.Count; i++)
+            AvlTree avlTree = new AvlTree();
+            avlTree.insert(15);
+            avlTree.insert(12);
+            avlTree.insert(90);
+            avlTree.insert(83);
+            avlTree.insert(99);
+            avlTree.insert(42);
+            avlTree.insert(56);
+            avlTree.insert(8);
+            avlTree.insert(74);
+            ArrayList inOrderList = avlTree.inorder();
+            for (int i = 0; i < inOrderList.Count; i++)
             {
-                AvlNode node = (AvlNode)ret[i];
-                Console.WriteLine("Value: " + node.key + " Height: " + avt1.height(node) + " - Balance: " + node.balance);
+                AvlNode node = (AvlNode)inOrderList[i];
+                Console.WriteLine("Value: " + node.value + " Height: " + avlTree.height(node) + " - Balance: " + node.balance);
             }
             Console.ReadLine();
         }

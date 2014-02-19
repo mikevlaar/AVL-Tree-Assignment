@@ -11,60 +11,60 @@ public class AvlTree
 
     /**
     * Add a new element with key "k" into the tree.
-    * @param k :The key of the new node.
+    * @param value :The value of the new node.
     */
-    public void insert(int k) 
+    public void insert(int value) 
     {
         // create new node
-        AvlNode n = new AvlNode(k);
+        AvlNode node = new AvlNode(value);
         // start recursive procedure for inserting the node
-        insertAVL(this.root,n);
+        insertAVL(this.root, node);
     }
  
     /**
     * Recursive method to insert a node into a tree.
-    * @param p :The node currently compared, usually you start with the root.
-    * @param q :The node to be inserted.
+    * @param compareNode :The node currently compared, usually you start with the root.
+    * @param newNode :The node to be inserted.
     */
-    public void insertAVL(AvlNode p, AvlNode q) 
+    public void insertAVL(AvlNode compareNode, AvlNode newNode) 
     {
         // If  node to compare is null, the node is inserted. If the root is null, it is the root of the tree.
-        if(p == null) 
+        if(compareNode == null) 
         {
-            this.root = q;
+            this.root = newNode;
         } 
         else 
         {
             // If compare node is smaller, continue with the left node
-            if(q.key < p.key) 
+            if(newNode.value < compareNode.value) 
             {
-                if(p.left == null) 
+                if(compareNode.left == null) 
                 {
-                    p.left = q;
-                    q.parent = p;
+                    compareNode.left = newNode;
+                    newNode.parent = compareNode;
      
                     // Node is inserted now, continue checking the balance
-                    recursiveBalance(p);
+                    recursiveBalance(compareNode);
                 } 
                 else 
                 {
-                    insertAVL(p.left, q);
+                    insertAVL(compareNode.left, newNode);
                 }
     
             } 
-            else if(q.key > p.key) 
+            else if(newNode.value > compareNode.value) 
             {
-                if(p.right == null) 
+                if(compareNode.right == null) 
                 {
-                    p.right = q;
-                    q.parent = p;
+                    compareNode.right = newNode;
+                    newNode.parent = compareNode;
      
                     // Node is inserted now, continue checking the balance
-                    recursiveBalance(p);
+                    recursiveBalance(compareNode);
                 } 
                 else 
                 {
-                    insertAVL(p.right, q);
+                    insertAVL(compareNode.right, newNode);
                 }
             }
         }
@@ -72,358 +72,322 @@ public class AvlTree
  
     /**
     * Check the balance for each node recursivly and call required methods for balancing the tree until the root is reached.
-    * @param cur :The node to check the balance for, usually you start with the parent of a leaf.
+    * @param node :The node to check the balance for, usually you start with the parent of a leaf.
     */
-    public void recursiveBalance(AvlNode cur) 
+    public void recursiveBalance(AvlNode node) 
     {
         // we do not use the balance in this class, but the store it anyway
-        setBalance(cur);
-        int balance = cur.balance;
+        setBalance(node);
+        int balance = node.balance;
   
         // check the balance
         if(balance == -2) 
         {
             Console.WriteLine("------------ -2 ----------------");
-            if(height(cur.left.left) >= height(cur.left.right)) 
+            if(height(node.left.left) >= height(node.left.right)) 
             {
-                cur = rotateRight(cur);
+                node = rotateRight(node);
             } 
             else 
             {
-                cur = doubleRotateLeftRight(cur);
+                node = doubleRotateLeftRight(node);
             }
         } 
         else if(balance == 2) 
         {
             Console.WriteLine("------------ 2 ----------------");
-            if(height(cur.right.right)>=height(cur.right.left)) 
+            if(height(node.right.right)>=height(node.right.left)) 
             {
-                cur = rotateLeft(cur);
+                node = rotateLeft(node);
             } 
             else 
             {
-                cur = doubleRotateRightLeft(cur);
+                node = doubleRotateRightLeft(node);
             }
         }
   
         // we did not reach the root yet
-        if(cur.parent != null) 
+        if(node.parent != null) 
         {
-            recursiveBalance(cur.parent);
+            recursiveBalance(node.parent);
         } 
         else 
         {
-            this.root = cur;
+            this.root = node;
             Console.WriteLine("------------ Balancing finished ----------------");
         }
     }
 
     /**
     * Removes a node from the tree, if it is existent.
+    * @param nodeValue :The value of node to remove.
     */
-    public void remove(int k) 
+    public void remove(int nodeValue) 
     {
         // First we must find the node, after this we can delete it.
-        removeAVL(this.root, k);
+        removeAVL(this.root, nodeValue);
     }
  
     /**
     * Finds a node and calls a method to remove the node.
-    * @param p :The node to start the search.
-    * @param q :The KEY of node to remove.
+    * @param node :The node to start the search.
+    * @param nodeValue :The value of node to remove.
     */
-    public void removeAVL(AvlNode p, int q) 
+    public void removeAVL(AvlNode node, int nodeValue) 
     {
-        if(p == null) 
+        if(node != null) 
         {
-            // der Wert existiert nicht in diesem Baum, daher ist nichts zu tun
-            return;
-        } 
-        else 
-        {
-            if(p.key > q)  
+            if(node.value > nodeValue)  
             {
-                removeAVL(p.left, q);
+                removeAVL(node.left, nodeValue);
             } 
-            else if(p.key < q) 
+            else if(node.value < nodeValue) 
             {
-                removeAVL(p.right, q);
+                removeAVL(node.right, nodeValue);
             } 
-            else if(p.key == q) 
+            else if(node.value == nodeValue) 
             {
-                // we found the node in the tree.. now lets go on!
-                removeFoundNode(p);
+                removeFoundNode(node);
             }
         }
     }
  
     /**
     * Removes a node from a AVL-Tree, while balancing will be done if necessary.
-    * @param q :The node to be removed.
+    * @param node :The node to be removed.
     */
-    public void removeFoundNode(AvlNode q) 
+    public void removeFoundNode(AvlNode node) 
     {
-        AvlNode r;
+        AvlNode successorNode;
 
-        // at least one child of q, q will be removed directly
-        if(q.left == null || q.right == null) 
+        // at least one child of node, node will be removed directly
+        if(node.left == null || node.right == null) 
         {
             // the root is deleted
-            if(q.parent == null) 
+            if(node.parent == null) 
             {
                 this.root = null;
-                q = null;
+                node = null;
                 return;
             }
-            r = q;
+            successorNode = node;
         } 
         else 
         {
-            // q has two children --> will be replaced by successor
-            r = successor(q);
-            q.key = r.key;
+            // node has two children --> will be replaced by successor
+            successorNode = successor(node);
+            node.value = successorNode.value;
         }
   
-        AvlNode p;
-        if(r.left != null) 
+        AvlNode parentNode;
+        if(successorNode.left != null) 
         {
-            p = r.left;
+            parentNode = successorNode.left;
         } 
         else 
         {
-            p = r.right;
+            parentNode = successorNode.right;
         }
   
-        if(p != null) 
+        if(parentNode != null) 
         {
-            p.parent = r.parent;
+            parentNode.parent = successorNode.parent;
         }
   
-        if(r.parent == null) 
+        if(successorNode.parent == null) 
         {
-            this.root = p;
+            this.root = parentNode;
         } 
         else 
         {
-            if(r == r.parent.left) 
+            if(successorNode == successorNode.parent.left) 
             {
-                r.parent.left = p;
+                successorNode.parent.left = parentNode;
             } 
             else 
             {
-                r.parent.right = p;
+                successorNode.parent.right = parentNode;
             }
 
             // balancing must be done until the root is reached.
-            recursiveBalance(r.parent);
+            recursiveBalance(successorNode.parent);
         }
-        r = null;
+        successorNode = null;
     }
  
     /**
     * Left rotation using the given node.
-    * @param n :The node for the rotation.
+    * @param node :The node for the rotation.
     * @return The root of the rotated tree.
     */
-    public AvlNode rotateLeft(AvlNode n) 
+    public AvlNode rotateLeft(AvlNode node) 
     {
-        AvlNode v = n.right;
-        v.parent = n.parent;
-        n.right = v.left;
+        AvlNode rotatedNode = node.right;
+        rotatedNode.parent = node.parent;
+        node.right = rotatedNode.left;
   
-        if(n.right != null) 
+        if(node.right != null) 
         {
-            n.right.parent = n;
+            node.right.parent = node;
         }
-        v.left = n;
-        n.parent = v;
+        rotatedNode.left = node;
+        node.parent = rotatedNode;
   
-        if(v.parent != null) 
+        if(rotatedNode.parent != null) 
         {
-            if(v.parent.right == n) 
+            if(rotatedNode.parent.right == node) 
             {
-                v.parent.right = v;
+                rotatedNode.parent.right = rotatedNode;
             } 
-            else if(v.parent.left == n) 
+            else if(rotatedNode.parent.left == node) 
             {
-                v.parent.left = v;
+                rotatedNode.parent.left = rotatedNode;
             }
         }
-        setBalance(n);
-        setBalance(v);
+        setBalance(node);
+        setBalance(rotatedNode);
   
-        return v;
+        return rotatedNode;
     }
  
     /**
     * Right rotation using the given node.
-    * @param n :The node for the rotation
+    * @param node :The node for the rotation
     * @return The root of the new rotated tree.
     */
-    public AvlNode rotateRight(AvlNode n) 
+    public AvlNode rotateRight(AvlNode node) 
     {
-        AvlNode v = n.left;
-        v.parent = n.parent;
-        n.left = v.right;
+        AvlNode rotatedNode = node.left;
+        rotatedNode.parent = node.parent;
+        node.left = rotatedNode.right;
   
-        if(n.left != null) 
+        if(node.left != null) 
         {
-            n.left.parent = n;
+            node.left.parent = node;
         }
-        v.right = n;
-        n.parent = v;
+        rotatedNode.right = node;
+        node.parent = rotatedNode;
   
-        if(v.parent != null) 
+        if(rotatedNode.parent != null) 
         {
-            if(v.parent.right == n) 
+            if(rotatedNode.parent.right == node) 
             {
-                v.parent.right = v;
+                rotatedNode.parent.right = rotatedNode;
             } 
-            else if(v.parent.left == n) 
+            else if(rotatedNode.parent.left == node) 
             {
-                v.parent.left = v;
+                rotatedNode.parent.left = rotatedNode;
             }
         }
-        setBalance(n);
-        setBalance(v);
+        setBalance(node);
+        setBalance(rotatedNode);
   
-        return v;
+        return rotatedNode;
     }
 
     /**
-    * 
-    * @param u :The node for the rotation.
+    * This method double rotates the node in the AVL tree.
+    * First a left rotation then a right rotation.
+    * @param node :The node for the rotation.
     * @return The root after the double rotation.
     */
-    public AvlNode doubleRotateLeftRight(AvlNode u) 
+    public AvlNode doubleRotateLeftRight(AvlNode node) 
     {
-        u.left = rotateLeft(u.left);
-        return rotateRight(u);
+        node.left = rotateLeft(node.left);
+        return rotateRight(node);
     }
  
     /**
-    * 
-    * @param u :The node for the rotation.
+    * This method double rotates the node in the AVL tree.
+    * First a right rotation then a left rotation.
+    * @param node :The node for the rotation.
     * @return The root after the double rotation.
     */
-    public AvlNode doubleRotateRightLeft(AvlNode u) 
+    public AvlNode doubleRotateRightLeft(AvlNode node) 
     {
-        u.right = rotateRight(u.right);
-        return rotateLeft(u);
+        node.right = rotateRight(node.right);
+        return rotateLeft(node);
     }
- 
-    /***************************** Helper Functions ************************************/
  
     /**
     * Returns the successor of a given node in the tree (search recursivly).
-    * @param q :The predecessor.
-    * @return The successor of node q.
+    * @param node :The predecessor.
+    * @return The successor of node.
     */
-    public AvlNode successor(AvlNode q) 
+    public AvlNode successor(AvlNode node) 
     {
-        if(q.right != null) 
+        if(node.right != null) 
         {
-            AvlNode r = q.right;
-            while(r.left != null) 
+            AvlNode rightNode = node.right;
+            while(rightNode.left != null) 
             {
-                r = r.left;
+                rightNode = rightNode.left;
             }
-            return r;
+            return rightNode;
         } 
         else 
         {
-            AvlNode p = q.parent;
-            while(p != null && q == p.right) 
+            AvlNode parentNode = node.parent;
+            while(parentNode != null && node == parentNode.right) 
             {
-                q = p;
-                p = q.parent;
+                node = parentNode;
+                parentNode = node.parent;
             }
-            return p;
+            return parentNode;
         }
     }
- 
+
     /**
     * Calculating the "height" of a node.
-    * @param cur
+    * @param Node :The current node.
     * @return The height of a node (-1, if node is not existent eg. NULL).
     */
-    public int height(AvlNode cur) 
+    public int height(AvlNode node) 
     {
-        if(cur == null) 
+        if(node == null) 
         {
             return -1;
         }
-        if(cur.left == null && cur.right == null) 
+        if(node.left == null && node.right == null) 
         {
             return 0;
         } 
-        else if(cur.left == null) 
+        else if(node.left == null) 
         {
-            return 1 + height(cur.right); //cur.right.height;
+            return 1 + height(node.right);
         } 
-        else if(cur.right == null) 
+        else if(node.right == null) 
         {
-            return 1 + height(cur.left); //cur.left.height;
+            return 1 + height(node.left);
         } 
         else 
         {
-            return 1 + maximum(height(cur.left), height(cur.right)); //maximum(cur.left.height, cur.right.height);
+            return 1 + maximum(height(node.left), height(node.right));
         }
     }
  
     /**
     * Return the maximum of two integers.
     */
-    private int maximum(int a, int b) 
+    private int maximum(int valueOne, int valueTwo) 
     {
-        if(a >= b) 
+        if(valueOne >= valueTwo) 
         {
-            return a;
+            return valueOne;
         }
         else 
         {
-            return b;
+            return valueTwo;
         }
     }
 
-    /** 
-    * Only for debugging purposes. Gives all information about a node.
-    * @param n :The node to write information about.
-    */
-    public void debug(AvlNode n) 
+    /**
+     * This method sets the balance of the given node in the AVL tree.
+     * @param node :The current node.
+     */
+    private void setBalance(AvlNode node) 
     {
-        int l = 0;
-        int r = 0;
-        int p = 0;
-
-        if(n.left != null) 
-        {
-            l = n.left.key;
-        }
-        if(n.right != null) 
-        {
-            r = n.right.key;
-        }
-        if(n.parent != null) 
-        {
-            p = n.parent.key;
-        }
-  
-        Console.WriteLine("Left: " + l + " Key: " + n + " Right: " + r + " Parent: " + p + " Balance: " + n.balance);
-  
-        if(n.left != null) 
-        {
-            debug(n.left);
-        }
-        if(n.right != null) 
-        {
-            debug(n.right);
-        }
-    }
- 
-    private void setBalance(AvlNode cur) 
-    {
-        cur.balance = height(cur.right) - height(cur.left);
+        node.balance = height(node.right) - height(node.left);
     }
  
     /**
@@ -439,17 +403,17 @@ public class AvlTree
  
     /**
     * Function to calculate inorder recursivly.
-    * @param n :The current node.
+    * @param node :The current node.
     * @param io :The list to save the inorder traversal.
     */
-    public void inorder(AvlNode n, ArrayList io) 
+    public void inorder(AvlNode node, ArrayList inOrderList) 
     {
-        if (n == null) 
+        if (node == null) 
         {
             return;
         }
-        inorder(n.left, io);
-        io.Add(n);
-        inorder(n.right, io);
+        inorder(node.left, inOrderList);
+        inOrderList.Add(node);
+        inorder(node.right, inOrderList);
     }
 }
