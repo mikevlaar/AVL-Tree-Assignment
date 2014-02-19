@@ -149,7 +149,6 @@ public class AvlTree
         } 
         else if(balance == 2) 
         {
-            Console.WriteLine("------------ 2 ----------------");
             if(calculateHeight(node.Right.Right) >= calculateHeight(node.Right.Left)) 
             {
                 node = rotateLeft(node);
