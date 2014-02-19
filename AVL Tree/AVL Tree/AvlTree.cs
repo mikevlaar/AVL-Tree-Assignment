@@ -20,13 +20,69 @@ public class AvlTree
         // start recursive procedure for inserting the node
         insertAVL(this.root, node);
     }
+
+    /**
+    * Calculates the Inorder traversal of this tree.
+    * @return A Array-List of the tree in inorder traversal.
+    */
+    public ArrayList inorder()
+    {
+        ArrayList ret = new ArrayList();
+        inorder(root, ret);
+        return ret;
+    }
+
+    /**
+    * Function to calculate inorder recursivly.
+    * @param node :The current node.
+    * @param io :The list to save the inorder traversal.
+    */
+    public void inorder(AvlNode node, ArrayList inOrderList)
+    {
+        if (node == null)
+        {
+            return;
+        }
+        inorder(node.Left, inOrderList);
+        inOrderList.Add(node);
+        inorder(node.Right, inOrderList);
+    }
+
+    /**
+    * Calculating the "height" of a node.
+    * @param Node :The current node.
+    * @return The height of a node (-1, if node is not existent eg. NULL).
+    */
+    public int calculateHeight(AvlNode node)
+    {
+        if (node == null)
+        {
+            return -1;
+        }
+        if (node.Left == null && node.Right == null)
+        {
+            return 0;
+        }
+        else if (node.Left == null)
+        {
+            return 1 + calculateHeight(node.Right);
+        }
+        else if (node.Right == null)
+        {
+            return 1 + calculateHeight(node.Left);
+        }
+        else
+        {
+            return 1 + maximum(calculateHeight(node.Left), calculateHeight(node.Right));
+        }
+    }
  
     /**
     * Recursive method to insert a node into a tree.
     * @param compareNode :The node currently compared, usually you start with the root.
     * @param newNode :The node to be inserted.
     */
-    public void insertAVL(AvlNode compareNode, AvlNode newNode) 
+    private void insertAVL(AvlNode compareNode, AvlNode newNode) 
     {
         // If  node to compare is null, the node is inserted. If the root is null, it is the root of the tree.
         if(compareNode == null) 
@@ -35,35 +91,34 @@ public class AvlTree
             return;
         } 
         // If compare node is smaller, continue with the left node
-        if(newNode.value < compareNode.value) 
+        if(newNode.Value < compareNode.Value) 
         {
-            if(compareNode.left == null) 
+            if(compareNode.Left == null) 
             {
-                compareNode.left = newNode;
-                newNode.parent = compareNode;
+                compareNode.Left = newNode;
+                newNode.Parent = compareNode;
      
                 // Node is inserted now, continue checking the balance
                 recursiveBalance(compareNode);
             } 
             else 
             {
-                insertAVL(compareNode.left, newNode);
+                insertAVL(compareNode.Left, newNode);
             }
-    
         } 
-        else if(newNode.value > compareNode.value) 
+        else if(newNode.Value > compareNode.Value) 
         {
-            if(compareNode.right == null) 
+            if(compareNode.Right == null) 
             {
-                compareNode.right = newNode;
-                newNode.parent = compareNode;
+                compareNode.Right = newNode;
+                newNode.Parent = compareNode;
      
                 // Node is inserted now, continue checking the balance
                 recursiveBalance(compareNode);
             } 
             else 
             {
-                insertAVL(compareNode.right, newNode);
+                insertAVL(compareNode.Right, newNode);
             }
         }
     }
@@ -72,47 +127,49 @@ public class AvlTree
     * Check the balance for each node recursivly and call required methods for balancing the tree until the root is reached.
     * @param node :The node to check the balance for, usually you start with the parent of a leaf.
     */
-    public void recursiveBalance(AvlNode node) 
+    private void recursiveBalance(AvlNode node) 
     {
         // we do not use the balance in this class, but store it anyway
         setBalance(node);
-        int balance = node.balance;
+        int balance = node.Balance;
   
         // check the balance
         if(balance == -2) 
         {
-            Console.WriteLine("------------ -2 ----------------");
-            if(height(node.left.left) >= height(node.left.right)) 
+            if(calculateHeight(node.Left.Left) >= calculateHeight(node.Left.Right)) 
             {
                 node = rotateRight(node);
+                Console.WriteLine("Node has been rotated right!");
             } 
             else 
             {
                 node = doubleRotateLeftRight(node);
+                Console.WriteLine("Node has been double rotated left and right!");
             }
         } 
         else if(balance == 2) 
         {
             Console.WriteLine("------------ 2 ----------------");
-            if(height(node.right.right)>=height(node.right.left)) 
+            if(calculateHeight(node.Right.Right) >= calculateHeight(node.Right.Left)) 
             {
                 node = rotateLeft(node);
+                Console.WriteLine("Node has been rotated left!");
             } 
             else 
             {
                 node = doubleRotateRightLeft(node);
+                Console.WriteLine("Node has been double rotated right and left!");
             }
         }
   
         // we did not reach the root yet
-        if(node.parent != null) 
+        if(node.Parent != null) 
         {
-            recursiveBalance(node.parent);
+            recursiveBalance(node.Parent);
         } 
         else 
         {
             this.root = node;
-            Console.WriteLine("------------ Balancing finished ----------------");
         }
     }
  
@@ -121,28 +178,28 @@ public class AvlTree
     * @param node :The node for the rotation.
     * @return The root of the rotated tree.
     */
-    public AvlNode rotateLeft(AvlNode node) 
+    private AvlNode rotateLeft(AvlNode node) 
     {
-        AvlNode rotatedNode = node.right;
-        rotatedNode.parent = node.parent;
-        node.right = rotatedNode.left;
+        AvlNode rotatedNode = node.Right;
+        rotatedNode.Parent = node.Parent;
+        node.Right = rotatedNode.Left;
   
-        if(node.right != null) 
+        if(node.Right != null) 
         {
-            node.right.parent = node;
+            node.Right.Parent = node;
         }
-        rotatedNode.left = node;
-        node.parent = rotatedNode;
+        rotatedNode.Left = node;
+        node.Parent = rotatedNode;
   
-        if(rotatedNode.parent != null) 
+        if(rotatedNode.Parent != null) 
         {
-            if(rotatedNode.parent.right == node) 
+            if(rotatedNode.Parent.Right == node) 
             {
-                rotatedNode.parent.right = rotatedNode;
+                rotatedNode.Parent.Right = rotatedNode;
             } 
-            else if(rotatedNode.parent.left == node) 
+            else if(rotatedNode.Parent.Left == node) 
             {
-                rotatedNode.parent.left = rotatedNode;
+                rotatedNode.Parent.Left = rotatedNode;
             }
         }
         setBalance(node);
@@ -156,28 +213,28 @@ public class AvlTree
     * @param node :The node for the rotation
     * @return The root of the new rotated tree.
     */
-    public AvlNode rotateRight(AvlNode node) 
+    private AvlNode rotateRight(AvlNode node) 
     {
-        AvlNode rotatedNode = node.left;
-        rotatedNode.parent = node.parent;
-        node.left = rotatedNode.right;
+        AvlNode rotatedNode = node.Left;
+        rotatedNode.Parent = node.Parent;
+        node.Left = rotatedNode.Right;
   
-        if(node.left != null) 
+        if(node.Left != null) 
         {
-            node.left.parent = node;
+            node.Left.Parent = node;
         }
-        rotatedNode.right = node;
-        node.parent = rotatedNode;
+        rotatedNode.Right = node;
+        node.Parent = rotatedNode;
   
-        if(rotatedNode.parent != null) 
+        if(rotatedNode.Parent != null) 
         {
-            if(rotatedNode.parent.right == node) 
+            if(rotatedNode.Parent.Right == node) 
             {
-                rotatedNode.parent.right = rotatedNode;
+                rotatedNode.Parent.Right = rotatedNode;
             } 
-            else if(rotatedNode.parent.left == node) 
+            else if(rotatedNode.Parent.Left == node) 
             {
-                rotatedNode.parent.left = rotatedNode;
+                rotatedNode.Parent.Left = rotatedNode;
             }
         }
         setBalance(node);
@@ -192,9 +249,9 @@ public class AvlTree
     * @param node :The node for the rotation.
     * @return The root after the double rotation.
     */
-    public AvlNode doubleRotateLeftRight(AvlNode node) 
+    private AvlNode doubleRotateLeftRight(AvlNode node) 
     {
-        node.left = rotateLeft(node.left);
+        node.Left = rotateLeft(node.Left);
         return rotateRight(node);
     }
  
@@ -204,40 +261,10 @@ public class AvlTree
     * @param node :The node for the rotation.
     * @return The root after the double rotation.
     */
-    public AvlNode doubleRotateRightLeft(AvlNode node) 
+    private AvlNode doubleRotateRightLeft(AvlNode node) 
     {
-        node.right = rotateRight(node.right);
+        node.Right = rotateRight(node.Right);
         return rotateLeft(node);
-    }
- 
-
-    /**
-    * Calculating the "height" of a node.
-    * @param Node :The current node.
-    * @return The height of a node (-1, if node is not existent eg. NULL).
-    */
-    public int height(AvlNode node) 
-    {
-        if(node == null) 
-        {
-            return -1;
-        }
-        if(node.left == null && node.right == null) 
-        {
-            return 0;
-        } 
-        else if(node.left == null) 
-        {
-            return 1 + height(node.right);
-        } 
-        else if(node.right == null) 
-        {
-            return 1 + height(node.left);
-        } 
-        else 
-        {
-            return 1 + maximum(height(node.left), height(node.right));
-        }
     }
  
     /**
@@ -261,33 +288,6 @@ public class AvlTree
      */
     private void setBalance(AvlNode node) 
     {
-        node.balance = height(node.right) - height(node.left);
-    }
- 
-    /**
-    * Calculates the Inorder traversal of this tree.
-    * @return A Array-List of the tree in inorder traversal.
-    */
-    public ArrayList inorder() 
-    {
-        ArrayList ret = new ArrayList();
-        inorder(root, ret);
-        return ret;
-    }
- 
-    /**
-    * Function to calculate inorder recursivly.
-    * @param node :The current node.
-    * @param io :The list to save the inorder traversal.
-    */
-    public void inorder(AvlNode node, ArrayList inOrderList) 
-    {
-        if (node == null) 
-        {
-            return;
-        }
-        inorder(node.left, inOrderList);
-        inOrderList.Add(node);
-        inorder(node.right, inOrderList);
+        node.Balance = calculateHeight(node.Right) - calculateHeight(node.Left);
     }
 }
