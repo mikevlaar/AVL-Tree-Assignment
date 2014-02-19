@@ -10,7 +10,7 @@ public class AvlTree
     protected AvlNode root; // the root node
 
     /**
-    * Add a new element with key "k" into the tree.
+    * Add a new element with the given "value" into the tree.
     * @param value :The value of the new node.
     */
     public void insert(int value) 
@@ -32,40 +32,38 @@ public class AvlTree
         if(compareNode == null) 
         {
             this.root = newNode;
+            return;
         } 
-        else 
+        // If compare node is smaller, continue with the left node
+        if(newNode.value < compareNode.value) 
         {
-            // If compare node is smaller, continue with the left node
-            if(newNode.value < compareNode.value) 
+            if(compareNode.left == null) 
             {
-                if(compareNode.left == null) 
-                {
-                    compareNode.left = newNode;
-                    newNode.parent = compareNode;
+                compareNode.left = newNode;
+                newNode.parent = compareNode;
      
-                    // Node is inserted now, continue checking the balance
-                    recursiveBalance(compareNode);
-                } 
-                else 
-                {
-                    insertAVL(compareNode.left, newNode);
-                }
-    
+                // Node is inserted now, continue checking the balance
+                recursiveBalance(compareNode);
             } 
-            else if(newNode.value > compareNode.value) 
+            else 
             {
-                if(compareNode.right == null) 
-                {
-                    compareNode.right = newNode;
-                    newNode.parent = compareNode;
+                insertAVL(compareNode.left, newNode);
+            }
+    
+        } 
+        else if(newNode.value > compareNode.value) 
+        {
+            if(compareNode.right == null) 
+            {
+                compareNode.right = newNode;
+                newNode.parent = compareNode;
      
-                    // Node is inserted now, continue checking the balance
-                    recursiveBalance(compareNode);
-                } 
-                else 
-                {
-                    insertAVL(compareNode.right, newNode);
-                }
+                // Node is inserted now, continue checking the balance
+                recursiveBalance(compareNode);
+            } 
+            else 
+            {
+                insertAVL(compareNode.right, newNode);
             }
         }
     }
@@ -76,7 +74,7 @@ public class AvlTree
     */
     public void recursiveBalance(AvlNode node) 
     {
-        // we do not use the balance in this class, but the store it anyway
+        // we do not use the balance in this class, but store it anyway
         setBalance(node);
         int balance = node.balance;
   
@@ -116,103 +114,6 @@ public class AvlTree
             this.root = node;
             Console.WriteLine("------------ Balancing finished ----------------");
         }
-    }
-
-    /**
-    * Removes a node from the tree, if it is existent.
-    * @param nodeValue :The value of node to remove.
-    */
-    public void remove(int nodeValue) 
-    {
-        // First we must find the node, after this we can delete it.
-        removeAVL(this.root, nodeValue);
-    }
- 
-    /**
-    * Finds a node and calls a method to remove the node.
-    * @param node :The node to start the search.
-    * @param nodeValue :The value of node to remove.
-    */
-    public void removeAVL(AvlNode node, int nodeValue) 
-    {
-        if(node != null) 
-        {
-            if(node.value > nodeValue)  
-            {
-                removeAVL(node.left, nodeValue);
-            } 
-            else if(node.value < nodeValue) 
-            {
-                removeAVL(node.right, nodeValue);
-            } 
-            else if(node.value == nodeValue) 
-            {
-                removeFoundNode(node);
-            }
-        }
-    }
- 
-    /**
-    * Removes a node from a AVL-Tree, while balancing will be done if necessary.
-    * @param node :The node to be removed.
-    */
-    public void removeFoundNode(AvlNode node) 
-    {
-        AvlNode successorNode;
-
-        // at least one child of node, node will be removed directly
-        if(node.left == null || node.right == null) 
-        {
-            // the root is deleted
-            if(node.parent == null) 
-            {
-                this.root = null;
-                node = null;
-                return;
-            }
-            successorNode = node;
-        } 
-        else 
-        {
-            // node has two children --> will be replaced by successor
-            successorNode = successor(node);
-            node.value = successorNode.value;
-        }
-  
-        AvlNode parentNode;
-        if(successorNode.left != null) 
-        {
-            parentNode = successorNode.left;
-        } 
-        else 
-        {
-            parentNode = successorNode.right;
-        }
-  
-        if(parentNode != null) 
-        {
-            parentNode.parent = successorNode.parent;
-        }
-  
-        if(successorNode.parent == null) 
-        {
-            this.root = parentNode;
-        } 
-        else 
-        {
-            if(successorNode == successorNode.parent.left) 
-            {
-                successorNode.parent.left = parentNode;
-            } 
-            else 
-            {
-                successorNode.parent.right = parentNode;
-            }
-
-            // balancing must be done until the root is reached.
-            recursiveBalance(successorNode.parent);
-        }
-        successorNode = null;
     }
  
     /**
@@ -309,33 +210,6 @@ public class AvlTree
         return rotateLeft(node);
     }
  
-    /**
-    * Returns the successor of a given node in the tree (search recursivly).
-    * @param node :The predecessor.
-    * @return The successor of node.
-    */
-    public AvlNode successor(AvlNode node) 
-    {
-        if(node.right != null) 
-        {
-            AvlNode rightNode = node.right;
-            while(rightNode.left != null) 
-            {
-                rightNode = rightNode.left;
-            }
-            return rightNode;
-        } 
-        else 
-        {
-            AvlNode parentNode = node.parent;
-            while(parentNode != null && node == parentNode.right) 
-            {
-                node = parentNode;
-                parentNode = node.parent;
-            }
-            return parentNode;
-        }
-    }
 
     /**
     * Calculating the "height" of a node.
