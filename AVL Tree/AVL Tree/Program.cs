@@ -31,7 +31,11 @@ namespace AVL_Tree
             for (int i = 0; i < inOrderList.Count; i++)
             {
                 AvlNode node = (AvlNode)inOrderList[i];
-                Console.WriteLine("\nValue: " + node.Value + " Height: " + avlTree.calculateHeight(node) + " - Balance: " + node.Balance);
+                if(node.Parent != null) 
+                {
+                    Console.Write("\nParent: " + node.Parent.Value);
+                }
+                Console.WriteLine("Value: " + node.Value + " Height: " + avlTree.calculateHeight(node) + " - Balance: " + node.Balance);
             }
             Console.ReadLine();
         }
