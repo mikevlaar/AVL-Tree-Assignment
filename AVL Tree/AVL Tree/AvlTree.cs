@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Collections;
 
-/**
- * This class is the complete and tested implementation of an AVL-tree.
- */
 public class AvlTree 
 {
-    protected AvlNode root; // the root node
+    protected AvlNode root;
 
     /**
     * Add a new element with the given "value" into the tree.
@@ -15,9 +12,7 @@ public class AvlTree
     */
     public void insert(int value) 
     {
-        // create new node
         AvlNode node = new AvlNode(value);
-        // start recursive procedure for inserting the node
         insertAVL(this.root, node);
     }
 
@@ -84,13 +79,11 @@ public class AvlTree
     */
     private void insertAVL(AvlNode compareNode, AvlNode newNode) 
     {
-        // If  node to compare is null, the node is inserted. If the root is null, it is the root of the tree.
         if(compareNode == null) 
         {
             this.root = newNode;
             return;
         } 
-        // If compare node is smaller, continue with the left node
         if(newNode.Value < compareNode.Value) 
         {
             if(compareNode.Left == null) 
@@ -98,7 +91,6 @@ public class AvlTree
                 compareNode.Left = newNode;
                 newNode.Parent = compareNode;
      
-                // Node is inserted now, continue checking the balance
                 recursiveBalance(compareNode);
             } 
             else 
@@ -113,7 +105,6 @@ public class AvlTree
                 compareNode.Right = newNode;
                 newNode.Parent = compareNode;
      
-                // Node is inserted now, continue checking the balance
                 recursiveBalance(compareNode);
             } 
             else 
@@ -129,11 +120,9 @@ public class AvlTree
     */
     private void recursiveBalance(AvlNode node) 
     {
-        // we do not use the balance in this class, but store it anyway
         setBalance(node);
         int balance = node.Balance;
   
-        // check the balance
         if(balance == -2) 
         {
             if(calculateHeight(node.Left.Left) >= calculateHeight(node.Left.Right)) 
@@ -161,7 +150,6 @@ public class AvlTree
             }
         }
   
-        // we did not reach the root yet
         if(node.Parent != null) 
         {
             recursiveBalance(node.Parent);
